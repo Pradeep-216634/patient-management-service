@@ -1,0 +1,7 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  generateName: patient-ci-check-
+spec:
+  taskRef:
+    name: patient-ci-check

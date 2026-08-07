@@ -1,0 +1,12 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: patient-ci-check
+spec:
+  steps:
+    - name: check
+      image: alpine:3.20
+      script: |
+        #!/bin/sh
+        echo "Patient Management Service"
+        echo "Tekton CI is working"
