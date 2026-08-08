@@ -1,0 +1,62 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+
+metadata:
+  name: patient-management-ci
+
+spec:
+
+  params:
+
+    - name: git-url
+      type: string
+
+    - name: git-revision
+      type: string
+      default: main
+
+  workspaces:
+
+    - name: shared-workspace
+
+  tasks:
+
+    # -----------------------------------
+    # TASK 1 - Clone source code
+    # -----------------------------------
+
+    - name: clone-source
+
+      taskRef:
+        name: git-clone
+
+      params:
+
+        - name: url
+          value: $(params.git-url)
+
+        - name: revision
+          value: $(params.git-revision)
+
+      workspaces:
+
+        - name: source
+          workspace: shared-workspace
+
+
+    # -----------------------------------
+    # TASK 2 - Maven build
+    # -----------------------------------
+
+    - name: build-application
+
+      runAfter:
+        - clone-source
+
+      taskRef:
+        name: maven-build
+
+      workspaces:
+
+        - name: source
+          workspace: shared-workspace

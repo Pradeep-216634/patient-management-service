@@ -1,0 +1,33 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+
+metadata:
+  generateName: patient-management-ci-
+
+spec:
+
+  pipelineRef:
+    name: patient-management-ci
+
+  params:
+
+    - name: git-url
+      value: https://github.com/Pradeep-216634/patient-management-service.git
+
+    - name: git-revision
+      value: main
+
+  workspaces:
+
+    - name: shared-workspace
+
+      volumeClaimTemplate:
+
+        spec:
+
+          accessModes:
+            - ReadWriteOnce
+
+          resources:
+            requests:
+              storage: 1Gi
