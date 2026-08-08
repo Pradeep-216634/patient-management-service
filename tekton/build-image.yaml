@@ -1,0 +1,62 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: build-image
+spec:
+
+  params:
+    - name: IMAGE
+      type: string
+
+    - name: ECR_REGISTRY
+      type: string
+
+  workspaces:
+    - name: source
+
+  steps:
+
+    - name: build-and-push
+
+      image: quay.io/buildah/stable:v1
+
+      securityContext:
+        privileged: true
+
+      workingDir: $(workspaces.source.path)
+
+      env:
+        - name: ECR_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ecr-token
+              key: password
+
+      script: |
+        #!/bin/sh
+        set -eu
+
+        echo "Logging into Amazon ECR..."
+
+        printf '%s' "" |
+          buildah login \
+            --username AWS \
+            --password-stdin \
+            "$(params.ECR_REGISTRY)"
+
+        echo "Building image: $(params.IMAGE)"
+
+        buildah bud \
+          --storage-driver=vfs \
+          --format=oci \
+          --file Dockerfile \
+          --tag "$(params.IMAGE)" \
+          .
+
+        echo "Pushing image to ECR..."
+
+        buildah push \
+          --storage-driver=vfs \
+          "$(params.IMAGE)"
+
+        echo "Image pushed successfully."

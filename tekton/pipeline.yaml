@@ -15,15 +15,21 @@ spec:
       type: string
       default: main
 
+    - name: image
+      type: string
+
+    - name: ecr-registry
+      type: string
+
   workspaces:
 
     - name: shared-workspace
 
   tasks:
 
-    # -----------------------------------
-    # TASK 1 - Clone source code
-    # -----------------------------------
+    # -------------------------
+    # Clone
+    # -------------------------
 
     - name: clone-source
 
@@ -44,9 +50,9 @@ spec:
           workspace: shared-workspace
 
 
-    # -----------------------------------
-    # TASK 2 - Maven build
-    # -----------------------------------
+    # -------------------------
+    # Maven build
+    # -------------------------
 
     - name: build-application
 
@@ -55,6 +61,32 @@ spec:
 
       taskRef:
         name: maven-build
+
+      workspaces:
+
+        - name: source
+          workspace: shared-workspace
+
+
+    # -------------------------
+    # Container image + ECR
+    # -------------------------
+
+    - name: build-container-image
+
+      runAfter:
+        - build-application
+
+      taskRef:
+        name: build-image
+
+      params:
+
+        - name: IMAGE
+          value: $(params.image)
+
+        - name: ECR_REGISTRY
+          value: $(params.ecr-registry)
 
       workspaces:
 

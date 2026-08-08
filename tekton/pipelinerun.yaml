@@ -13,9 +13,12 @@ spec:
 
     - name: git-url
       value: https://github.com/Pradeep-216634/patient-management-service.git
-
     - name: git-revision
       value: main
+    - name: ecr-registry
+      value: 349865002678.dkr.ecr.ap-south-1.amazonaws.com
+    - name: image
+      value: 349865002678.dkr.ecr.ap-south-1.amazonaws.com/patient-management-service:1.0.1
 
   workspaces:
 
